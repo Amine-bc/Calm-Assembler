@@ -13,10 +13,10 @@ export class Assembler{
 
     constructor(input){
         this.input = input;
-        this.toAssemble = new SyntaxicAnalysis(input);
+        this.toAssemble = new SyntaxicAnalysis(this.input);
         let ret = confirmationfunction(this.toAssemble.Syntaxiclist);
         if (ret.status==false) {
-            console.log("There are errors in your code cannot assemble");
+            console.log("\nThere are errors in your code cannot assemble\n");
             console.log(ret.errors);
         }
 
@@ -49,7 +49,7 @@ const confirmationfunction = (input) => {
 
 }
 
-var input = ["LABEL imo 1437","LABEL rani 4532", "MOV R1, 14", " ADD R1,R2**","PUSHA"]
+var input = ["LABEL imo 1437","LABEL rani 4532", "NOT 16* + 88 ", "ROL 4","PUSHA"]
 
 let output = new Assembler(input)
 
@@ -58,8 +58,9 @@ let output = new Assembler(input)
 
 
 
-console.log(Assembler.Labellist)
+console.log("\nLabel list: \n",Assembler.Labellist)
 
+console.log("\nSyntaxic list: \n",output.toAssemble.Syntaxiclist)
 
 
 

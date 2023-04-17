@@ -10,7 +10,6 @@ export class SyntaxicAnalysis {
         //console.log(lexicalList)
         
         for(let i = 0; i < lexicalList.length; i++){
-
             // here operation with each line of code
             // we must check if it is a label or an instruction
             // if it is a label we have to check that the next element is a number and it has to be < from a number we fix
@@ -91,19 +90,43 @@ export class SyntaxicAnalysis {
                         //|------------------------------------------------------------------------------------------
                         const functINST1 = ()=> {
                             var firstparam = lexicalList[i][1]
-                            if (lexicalList[i][0].value == 'WRITE' || 'READ') {
-                                
+                            if (lexicalList[i][0].value == 'WRITE' || lexicalList[i][0].value == 'READ') {
+
                             }else{
                             switch(firstparam.type){
-                            
                             case 'NUMBER' :
                                 if (lexicalList[i].length == 2) {
-                                    this.Syntaxiclist.push(lexicalList[i]);
+                                    if (firstparam.value < Assembler.MAXNUM) {
+                                        this.Syntaxiclist.push(lexicalList[i]);
+                                    }else{
+                                        this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
+                                    }
                                     
                                 }else{
+                                    if (lexicalList[i].length == 5) {
+                                        if (firstparam.value < Assembler.MAXNUM) {
+                                            console.log(lexicalList[i][2])
+                                            if (lexicalList[i][2].type === 'SPECIAL CHARACTER' && lexicalList[i][2].value === '*' && lexicalList[i][3].value === '+') {                                                {
+                                                if (lexicalList[i][4].type == 'NUMBER') {
+                                                    if (lexicalList[i][4].value < Assembler.MAXNUM) {
+                                                        this.Syntaxiclist.push(lexicalList[i]);
+                                                    }else{
+                                                        this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
+                                                    }
+                                                }else{
+                                                    this.Syntaxiclist.push(new Errorcalm("Third operand must be a number",null,i))
+                                                }
+                                            }}else{
+                                                this.Syntaxiclist.push(new Errorcalm("Second operand must be a special char +",null,i))
+                                            }
+                                        }else{
+                                            this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
+                                    }
                                     //deplacement
 
-                                }
+                                }else{
+                                    this.Syntaxiclist.push(new Errorcalm("Wrong expression",null,i))
+                                }}
 
                             break;
 
@@ -113,10 +136,14 @@ export class SyntaxicAnalysis {
                                 // controle possible errors
 
                             }}
+                            
+                            
+                            //+ ajouter opp avec labels
                     
 
                             
                         }
+
                       functINST1();
                       break ;
                       
@@ -131,6 +158,11 @@ export class SyntaxicAnalysis {
           } 
          
     }
+
+
+
+
+
 
 
     //estandards for each instruction 
