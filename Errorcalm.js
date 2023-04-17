@@ -1,3 +1,6 @@
+import { Assembler,FuncInterface } from "./Assembler.js";
+import { SyntaxicAnalysis } from "./SyntaxicAnalysis.js";
+import { Lexer } from "./Lexer.js";
 
 export class Errorcalm{
 

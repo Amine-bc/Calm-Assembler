@@ -1,10 +1,11 @@
 import { Lexer } from './Lexer.js';
 import { Errorcalm } from './Errorcalm.js';
-import { Assembler } from './Assembler.js';
+import { Assembler,FuncInterface } from "./Assembler.js";
 
 
 export class SyntaxicAnalysis {
     Syntaxiclist = []
+    
     constructor(input) { 
 
         let lexicalList = input;
@@ -26,10 +27,21 @@ export class SyntaxicAnalysis {
                             if( lexicalList[i][2].value < Assembler.MAXNUM){
                                 if(lexicalList[i][1].type == 'TEXT'){
                                     if(Lexer.isValidString(lexicalList[i][1].value)){
-                                    this.Syntaxiclist.push(lexicalList[i]);
-                                    Assembler.Labellist.push({ name: lexicalList[i][1].value, address: lexicalList[i][2].value })
-                                    // other filters for text standards
-                                    }else{ this.Syntaxiclist.push(new Errorcalm("LABEL name is not valid",null,i)) }
+                                        //  filters for text standards and validity of the text
+                                        // check if label already existing 
+                                            var found = false ;
+                                            Assembler.Labellist.forEach(element => { 
+                                                if(element.name === labelname){
+                                                    found = true
+                                                }
+                                            });
+                                        if (!found) {    
+                                        this.Syntaxiclist.push(lexicalList[i]);
+                                        Assembler.Labellist.push({ name: lexicalList[i][1].value, address: lexicalList[i][2].value, linedeclared:i })
+                                    }else{
+                                        this.Syntaxiclist.push(new Errorcalm("LABEL already declared",null,i))
+                                    }
+                                }else{ this.Syntaxiclist.push(new Errorcalm("LABEL name is not valid",null,i)) }
                                 }else{
                                     this.Syntaxiclist.push(new Errorcalm("LABEL name not defined",null,i))
                               }
@@ -66,7 +78,7 @@ export class SyntaxicAnalysis {
                       break ;
 
 
-                      
+
                       case 'INST1':
                         // ONE params instructions: INST1 ::=  NEG, NOT, SHL, SHR, READ, WRITE, PUSH, POP, ROR, ROL, CALL, BE, BNE, BS, BI, BIE, BSE, BR
                         //|                                                                                         |
@@ -111,8 +123,10 @@ export class SyntaxicAnalysis {
                                             this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
                                     }
                                     //deplacement
+                                
 
                                 }else{
+                                    // add case of when there is an indirect addressing mode
                                     this.Syntaxiclist.push(new Errorcalm("Wrong expression",null,i))
                                 }}
 
@@ -126,8 +140,8 @@ export class SyntaxicAnalysis {
                             
                             
                             case 'TEXT' :
-                                //+ ajouter opp avec labels
-
+                                    //+ ajouter opp avec labels
+                                    this.Syntaxiclist.push([lexicalList[i][0],FuncInterface.Label_To_Num(firstparam.value,i)]);
 
                             }
                         

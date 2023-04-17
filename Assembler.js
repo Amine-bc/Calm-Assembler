@@ -1,6 +1,47 @@
 import { Lexer } from './Lexer.js';
 import {Errorcalm} from './Errorcalm.js'
 import {SyntaxicAnalysis} from './SyntaxicAnalysis.js'
+export const FuncInterface ={
+
+    Label_To_Num : (labelname,linenumber)=>{
+        var labelobj = false ;
+        Assembler.Labellist.forEach(element => { 
+            if(element.name === labelname){
+                labelobj = element
+            }
+        });
+    
+        console.log(labelobj)
+        if (labelobj == false)
+        {
+            //error
+            Errorcalm.set_syntaxicError(new Errorcalm("Label not found",null,linenumber));
+            return {type: 'ERROR', value: 'Label not found'};
+        }else{
+            //return the address
+            return {type: 'NUMBER', value: labelobj.address} 
+    }},
+    
+
+
+    confirmationfunction : (input) => {
+        var errormsg = []
+        var err = false ;
+        console.log(input)
+        for (let index = 0; index < input.length; index++) {
+            if (input[index] instanceof Errorcalm) {
+                errormsg.push({line: input[index].linenum, message:input[index].message})
+                err = true
+            }
+        }
+        return {errors: errormsg, status: !err}
+        
+    
+    },
+
+
+}
+
 
 export class Assembler{
 
@@ -20,7 +61,7 @@ export class Assembler{
         this.input = lexicalList;
         //console.log(lexicalList)
         this.toAssemble = new SyntaxicAnalysis(this.input);
-        let ret = confirmationfunction(this.toAssemble.Syntaxiclist);
+        let ret = FuncInterface.confirmationfunction(this.toAssemble.Syntaxiclist);
         if (!ret.status) {
             console.log("\nThere are errors in your code cannot assemble:\n");
             console.log(ret.errors);
@@ -126,22 +167,9 @@ export class Assembler{
 
 
 
-export const confirmationfunction = (input) => {
-    var errormsg = []
-    var err = false ;
-    console.log(input)
-    for (let index = 0; index < input.length; index++) {
-        if (input[index] instanceof Errorcalm) {
-            errormsg.push({line: input[index].linenum, message:input[index].message})
-            err = true
-        }
-    }
-    return {errors: errormsg, status: !err}
-    
 
-}
 
-var input = ["LABEL imo 1437","LABEL rani 4532", "NOT 16* + 88 ", "ROL mine","PUSHA"]
+var input = ["LABEL imo 1437","LABEL rani 4532", "NOT 16* + 88 ", "ROL imo","PUSHA"]
 
 let output = new Assembler(input) ;
 
