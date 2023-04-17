@@ -95,54 +95,44 @@ export class SyntaxicAnalysis {
                             }else{
                             switch(firstparam.type){
                             case 'NUMBER' :
-                                if (lexicalList[i].length == 2) {
-                                    if (firstparam.value < Assembler.MAXNUM) {
-                                        this.Syntaxiclist.push(lexicalList[i]);
-                                    }else{
-                                        this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
-                                    }
-                                    
-                                }else{
-                                    if (lexicalList[i].length == 5) {
-                                        if (firstparam.value < Assembler.MAXNUM) {
-                                            if (lexicalList[i][2].type === 'SPECIAL CHARACTER' && lexicalList[i][2].value === '*' && lexicalList[i][3].value === '+') {                                                {
-                                                if (lexicalList[i][4].type == 'NUMBER') {
-                                                    if (lexicalList[i][4].value < Assembler.MAXNUM) {
-                                                        this.Syntaxiclist.push(lexicalList[i]);
-                                                        // addressing mode deplassement add it to the element in the list here up
-                                                    }else{
-                                                        this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
-                                                    }
-                                                }else{
-                                                    this.Syntaxiclist.push(new Errorcalm("Third operand must be a number",null,i))
-                                                }
-                                            }}else{
-                                                this.Syntaxiclist.push(new Errorcalm("Second operand must be a special char +",null,i))
+                                    //check addressing
+                                    switch (lexicalList[i].length) {
+                                        case 2:
+                                            if (firstparam.value < Assembler.MAXNUM) {
+                                                this.Syntaxiclist.push(lexicalList[i]);
+                                            }else{
+                                                this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
                                             }
-                                        }else{
-                                            this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
-                                    }
-                                    //deplacement
-                                
+                                            break;
+                                        case 3:
 
-                                }else{
-                                    // add case of when there is an indirect addressing mode
-                                    this.Syntaxiclist.push(new Errorcalm("Wrong expression",null,i))
-                                }}
+                                        break;
+
+                                        case 4:
+
+                                        break;
+                                    
+                                        default:
+                                            break;
+                                    }
+
+                                    // Or indirect
+                                    
+                                
 
                             break;
 
                             case 'REGISTER' :
                                 // define addressing mode
                                 // or deplacement
-                                // controle possible errors
+                                // control possible errors
 
                             
-                            
+                            break;
                             case 'TEXT' :
-                                    //+ ajouter opp avec labels
+                                    //+ ajouter opp avec labels,  I guess DONE
                                     this.Syntaxiclist.push([lexicalList[i][0],FuncInterface.Label_To_Num(firstparam.value,i)]);
-
+                                    // add addressing modes direct and indirect for labels
                             }
                         
                         
