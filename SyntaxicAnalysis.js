@@ -110,6 +110,7 @@ export class SyntaxicAnalysis {
                                                 if (lexicalList[i][4].type == 'NUMBER') {
                                                     if (lexicalList[i][4].value < Assembler.MAXNUM) {
                                                         this.Syntaxiclist.push(lexicalList[i]);
+                                                        // addressing mode deplassement add it to the element in the list here up
                                                     }else{
                                                         this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
                                                     }

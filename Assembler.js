@@ -23,14 +23,99 @@ export class Assembler{
     function assemble(input){
         //turn instruction object to 8 octet hexa represented as a string
         // input is one line of code
+        for (let index = 0; index < input.length; index++) {
+            const element = input[index];
+            switch(element.type){
+                case 'INST0':
+                    switch(element.value){
+                        case 'RET':
+                            return '0035';
+                        case 'PUSHA':
+                            return '0021';
+                        case 'POPA':
+                            return '0023';
+                    
+                    }
+                case 'INST1':
+                    let oppcode = "";
+                    let reg_mod = "" ;
+                    let size = "";
+                    let adr= "";
+                    let operand="";
+                    switch(element.value){
+                        case 'NEG':
+                            oppcode = '0100';
+                            break;
+                        case 'NOT':
+                            oppcode = '0101';
+                            break;
+                        case 'SHL':
+                            oppcode = '0110';
+                            break;
+                        case 'SHR':
+                            oppcode = '0111';
+                            break;
+                        case 'READ':
+                            oppcode = '1000';
+                            break;
+                        case 'WRITE':
+                            oppcode = '1001';
+                            break;
+                        case 'PUSH':
+                            oppcode = '1010';
+                            break;
+                        case 'POP':
+                            oppcode = '1011';
+                            break;
+                        case 'ROR':
+                            oppcode = '1100';
+                            break;
+                        case 'ROL':
+                            oppcode = '1101';
+                            break;
+                        case 'CALL':
+                            oppcode = '0011001';
+                            break;
+                        case 'BE':
+                            oppcode = '0010010';
+                            break;
+                        case 'BNE':
+                            oppcode = '0010011';
+                            break;
+                        case 'BS':
+                            oppcode = '0010100';
+                            break;
+                        case 'BI':
+                            oppcode = '0010101';
+                            break;
+                        case 'BIE':
+                            oppcode = '0010110';
+                            break;
+                        case 'BSE':
+                            oppcode = '001111';
+                            break;
+                        case 'BR':
+                            oppcode = '0011000';
+                            break;
 
-        
-        
+                    }
+                    switch(element){
+                    //addressing modes
+                    }
+                    if (condition){
+                        //size
+                        // add operand
+                    }
+                    if (condition){
+                    //address if availble on 16 bits <=> 4 octects
+                    }
 
-    }
 
-            
-    }
+            }
+        }
+
+      }   
+  }
 }
 
 
