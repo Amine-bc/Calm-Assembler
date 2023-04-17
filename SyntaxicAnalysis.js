@@ -6,43 +6,26 @@ import { Assembler } from './Assembler.js';
 export class SyntaxicAnalysis {
     Syntaxiclist = []
     constructor(input) { 
-        let lexicalList = input.map((t)=> {return new Lexer(t).LexicalList} )
-        //console.log(lexicalList)
-        
+
+        let lexicalList = input;
         for(let i = 0; i < lexicalList.length; i++){
             // here operation with each line of code
             // we must check if it is a label or an instruction
             // if it is a label we have to check that the next element is a number and it has to be < from a number we fix
+            
               let firstword = lexicalList[i][0]
               let firstwordtype = firstword.type
+              
+              
               switch (firstwordtype) {
+                    
                   case 'LABEL':
-                    function isValidString(str) {
-                        // Check if the string contains any special characters
-                        if (/[^a-zA-Z0-9_]/.test(str)) {
-                          return false;
-                        }
-                        
-                        // Check if the string begins with a number
-                        if (/^\d/.test(str)) {
-                          return false;
-                        }
-                        
-                        // Check if the string is in the excluded list
-                        if (Assembler.excludedStrings.includes(str)) {
-                          return false;
-                        }
-                        
-                        // If none of the above conditions are met, the string is valid
-                        return true;
-                      }
-
                     const functLABEL = ()=> {
                         if (lexicalList[i].length == 3) {
                             if (lexicalList[i][2].type == 'NUMBER') {
                             if( lexicalList[i][2].value < Assembler.MAXNUM){
                                 if(lexicalList[i][1].type == 'TEXT'){
-                                    if(isValidString(lexicalList[i][1].value)){
+                                    if(Lexer.isValidString(lexicalList[i][1].value)){
                                     this.Syntaxiclist.push(lexicalList[i]);
                                     Assembler.Labellist.push({ name: lexicalList[i][1].value, address: lexicalList[i][2].value })
                                     // other filters for text standards
@@ -81,6 +64,9 @@ export class SyntaxicAnalysis {
 
                       functINST0();
                       break ;
+
+
+                      
                       case 'INST1':
                         // ONE params instructions: INST1 ::=  NEG, NOT, SHL, SHR, READ, WRITE, PUSH, POP, ROR, ROL, CALL, BE, BNE, BS, BI, BIE, BSE, BR
                         //|                                                                                         |
@@ -91,6 +77,8 @@ export class SyntaxicAnalysis {
                         const functINST1 = ()=> {
                             var firstparam = lexicalList[i][1]
                             if (lexicalList[i][0].value == 'WRITE' || lexicalList[i][0].value == 'READ') {
+                                //read or write from or to address so it include addressing mode
+                                // Labels 
 
                             }else{
                             switch(firstparam.type){
@@ -105,7 +93,6 @@ export class SyntaxicAnalysis {
                                 }else{
                                     if (lexicalList[i].length == 5) {
                                         if (firstparam.value < Assembler.MAXNUM) {
-                                            console.log(lexicalList[i][2])
                                             if (lexicalList[i][2].type === 'SPECIAL CHARACTER' && lexicalList[i][2].value === '*' && lexicalList[i][3].value === '+') {                                                {
                                                 if (lexicalList[i][4].type == 'NUMBER') {
                                                     if (lexicalList[i][4].value < Assembler.MAXNUM) {
@@ -136,11 +123,18 @@ export class SyntaxicAnalysis {
                                 // or deplacement
                                 // controle possible errors
 
-                            }}
                             
                             
-                            //+ ajouter opp avec labels
-                    
+                            case 'TEXT' :
+                                //+ ajouter opp avec labels
+
+
+                            }
+                        
+                        
+                        
+                        }
+                                                
 
                             
                         }
@@ -156,7 +150,8 @@ export class SyntaxicAnalysis {
                   
             }
            
-          } 
+          
+        }
          
     }
 

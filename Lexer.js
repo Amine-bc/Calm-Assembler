@@ -1,6 +1,29 @@
+import { Assembler } from './Assembler.js';
+import { Errorcalm } from './Errorcalm.js';
+import { SyntaxicAnalysis } from './SyntaxicAnalysis.js';
 export class Lexer {
-    constructor(code) {
-        console.log(code.match(/([a-zA-Z0-9]+\d*(?:[a-zA-Z09]+)?|\*|,|\+)/g))
+  static Errors = [];
+  static isValidString(str) {
+    // Check if the string contains any special characters
+    if (/[^a-zA-Z0-9_]/.test(str)) {
+      return false;
+    }
+    
+    // Check if the string begins with a number
+    if (/^\d/.test(str)) {
+      return false;
+    }
+    
+    // Check if the string is in the excluded list
+    if (Assembler.excludedStrings.includes(str)) {
+      return false;
+    }
+    
+    // If none of the above conditions are met, the string is valid
+    return true;
+  }
+    constructor(code,line) {
+      //console.log(code.match(/([a-zA-Z0-9]+\d*(?:[a-zA-Z09]+)?|\*|,|\+)/g))
       this.LexicalList = code.match(/([a-zA-Z0-9]+\d*(?:[a-zA-Z0-9]+)?|\*|,|\+)/g).filter(function (t) {
         return t.length > 0;
       }).map(function (t) {
@@ -83,10 +106,16 @@ export class Lexer {
               };
               break;
             default:
-              return {
-                type: 'TEXT',
-                value: t
-              };
+              if (Lexer.isValidString(t)) {
+                return {
+                  type: 'TEXT',
+                  value: t
+                };
+              }else{
+                Lexer.Errors.push(new Errorcalm("Invalid string", "LEXER", line)) ; //change this 0 to the line number
+                Errorcalm.set_LexicalError(Lexer.Errors);
+              }
+              
           }
         } else {
           return {

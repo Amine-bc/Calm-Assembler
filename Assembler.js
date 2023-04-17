@@ -10,17 +10,24 @@ export class Assembler{
     static excludedStrings = ['RET', 'PUSHA', 'POPA', 'NEG', 'NOT', 'SHL', 'SHR', 'READ', 'WRITE', 'PUSH', 'POP', 'ROR', 'ROL', 'CALL', 'BE', 'BNE', 'BS', 'BI', 'BIE', 'BSE', 'BR', 'NAND', 'CMP', 'MOV', 'ADD', 'SUB', 'MUL', 'DIV', 'AND', 'OR', 'XOR', 'NOR', 'R1', 'R2', 'R3', 'R4', 'ACC', 'BR', 'IR', 'SR', 'R1R', 'R2R', 'R3R', 'ACCR', 'R1L', 'R2L', 'R3L', 'ACCL'];
                       
 
-
     constructor(input){
-        this.input = input;
+        let lexicalList = input.map((t,index)=> {return new Lexer(t,index).LexicalList} )
+        if (Lexer.Errors.length > 0) {
+            Errorcalm.printError();
+        }else{
+        
+
+        this.input = lexicalList;
+        //console.log(lexicalList)
         this.toAssemble = new SyntaxicAnalysis(this.input);
         let ret = confirmationfunction(this.toAssemble.Syntaxiclist);
-        if (ret.status==false) {
-            console.log("\nThere are errors in your code cannot assemble\n");
+        if (!ret.status) {
+            console.log("\nThere are errors in your code cannot assemble:\n");
             console.log(ret.errors);
-        }
+        }}
+    }
 
-    function assemble(input){
+    assemble(input){
         //turn instruction object to 8 octet hexa represented as a string
         // input is one line of code
         for (let index = 0; index < input.length; index++) {
@@ -116,10 +123,10 @@ export class Assembler{
 
       }   
   }
-}
 
 
-const confirmationfunction = (input) => {
+
+export const confirmationfunction = (input) => {
     var errormsg = []
     var err = false ;
     console.log(input)
@@ -134,9 +141,9 @@ const confirmationfunction = (input) => {
 
 }
 
-var input = ["LABEL imo 1437","LABEL rani 4532", "NOT 16* + 88 ", "ROL 4","PUSHA"]
+var input = ["LABEL imo 1437","LABEL rani 4532", "NOT 16* + 88 ", "ROL mine","PUSHA"]
 
-let output = new Assembler(input)
+let output = new Assembler(input) ;
 
 
 
@@ -145,7 +152,8 @@ let output = new Assembler(input)
 
 console.log("\nLabel list: \n",Assembler.Labellist)
 
-console.log("\nSyntaxic list: \n",output.toAssemble.Syntaxiclist)
+//console.log("\nSyntaxic list: \n", output?.toAssemble?.Syntaxiclist ?? "Syntaxiclist is undefined");
+console.log("\nSyntaxic list: \n", (output && output.toAssemble && output.toAssemble.Syntaxiclist) ? output.toAssemble.Syntaxiclist : "Syntaxiclist is undefined");
 
 
 
