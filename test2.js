@@ -31,12 +31,11 @@ for (let index = lastindex+2; index < listofpar.length; index++) {
     list2[index-lastindex-2] = listofpar[index];
 }
 
-console.log(list1);
-console.log(list2);
+return {list1,list2}
 
 }
 
-const defadrmod = (listofparam) => {
+const defadrmod = (listofparam,i) => {
 
     switch (listofparam.length) {
         case 1:
@@ -49,14 +48,20 @@ const defadrmod = (listofparam) => {
             //direct
             if (listofparam[1].value === '*' ) {
                 return {type:listofparam[0].type,value:listofparam[0].value,mode:1} 
-            }            
+            }        else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong parameters",null,i));
+                return {type:'ERROR',value:'Wrong parameters',mode:1}
+            }    
             break;
         
         case 3:
             //indirect
             if (listofparam[1].value === '*' && listofparam[2].value === '*' ) {
                 return {type:listofparam[0].type,value:listofparam[0].value,mode:2} 
-            }   
+            }else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong parameters",null,i));
+                return {type:'ERROR',value:'Wrong parameters',mode:2}
+            }
             break;
         case 4:
             //dep
@@ -65,14 +70,17 @@ const defadrmod = (listofparam) => {
                 {
                 return {type:listofparam[0].type,value:listofparam[0].value,mode:3,depl:listofparam[3].value}
             }else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Number size is bigger then MAXNUM",null,i));
                 return {type:'ERROR',value:'Number size is bigger then MAXNUM',mode:3,depl:listofparam[3].value}
-                Errorcalm.errorlist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i));
-            
-        }}
+                break ;
+        }}else{
+            Errorcalm.SyntaxicError.push(new Errorcalm("Wrong parameters",null,i));
+            return {type:'ERROR',value:'Wrong parameters',mode:3,depl:listofparam[3].value}}
             break;
 
         default:
-            Errorcalm.errorlist.push(new Errorcalm("Wrong parameters",null,i));
+            Errorcalm.SyntaxicError.push(new Errorcalm("Wrong parameters",null,i));
+            return {type:'ERROR',value:'Wrong parameters',mode:3,depl:listofparam[3].value}
             break;
     }
 
@@ -84,13 +92,21 @@ const defadrmod = (listofparam) => {
 // to test the function
 
 let lista =[
-    /*{ type: 'TEXT', value: 'le' },
-    */
+    { type: 'NUMBER', value: '76' },
     { type: 'SPECIAL CHARACTER', value: '*' },
     { type: 'SPECIAL CHARACTER', value: ',' },
-    { type: 'NUMBER', value: '102' },
-    { type: 'SPECIAL CHARACTER', value: '*' },
-    { type: 'SPECIAL CHARACTER', value: '*' }
+    { type: 'NUMBER', value: 'R1' },
+    { type: 'SPECIAL CHARACTER', value: '+' },
+    { type: 'SPECIAL CHARACTER', value: '10' }
   ];
 
-    addrmod(lista,1);
+
+    let list1 = addrmod(lista,1).list1;
+    let list2 = addrmod(lista,1).list2;
+
+    console.log("list1",list1);
+
+    console.log(defadrmod(list1));
+    console.log("list2",list2);
+
+    console.log(defadrmod(list2));

@@ -235,8 +235,7 @@ export class SyntaxicAnalysis {
                                     
                                     
 
-                                    
-
+                                
                             }
                         
                         }
@@ -261,30 +260,20 @@ export class SyntaxicAnalysis {
                             this.Syntaxiclist.push(new Errorcalm("Comma missing",null,i))
                         }
                         else{
-
-
-                            switch (lexicalList[i][1].type) {
-                                case 'REGISTER':
-                                //check for addressing modes for the two operands treat each one as one operand 
-                                //check for deplacement
-
-                                break;
-                                case 'TEXT':
-                                //check if it's present in label list
-                                //then it would be same treatment as a number
-                                break;
-                                case 'NUMBER':
-                                    if (lexicalList[i][0].value == 'MOV') {
+                            
+                            var list1,list2 =[];
+                            list1 = FuncInterface.addrmod(lexicalList[i].slice(1),i).list1 ;
+                            //console.log("list1",list1[0].type)
+                            list2 = FuncInterface.addrmod(lexicalList[i].slice(1),i).list2 ;
+                            if(lexicalList[i][1].type=='NUMBER' && lexicalList[i][0].value == 'MOV') {
+                                //console.log("here------------------------")
                                         this.Syntaxiclist.push(new Errorcalm("Number can't be first operand",null,i))
-                                    }else{
-                                        //check for addressing modes for the two operands treat each one as one operand 
-                                        switch (lexicalList[i].length) {
-                                            case 4:
-                                                
-
-                                    }
-                        }
-                    }}
+                                        Errorcalm.SyntaxicError.push(new Errorcalm("Number can't be first operand",null,i))
+                            }else{
+                            //console.log("\nlist1",list1,"\nlist2",list2)
+                            //console.log("\nlist1",FuncInterface.defadrmod(list1),"\nlist2",FuncInterface.defadrmod(list2))
+                           this.Syntaxiclist.push([lexicalList[i][0],FuncInterface.defadrmod(list1,i),FuncInterface.defadrmod(list2,i)]);
+                }}
 
                       break ;
 

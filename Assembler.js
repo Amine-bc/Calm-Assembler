@@ -44,7 +44,95 @@ export const FuncInterface ={
     },
 
 
+    addrmod : (listofpar,line) => {
 
+        console.log(listofpar);
+    // go through the list of instructions if listofpar[index].value is different then , then add this element.value to the list 1
+    // go throught an if there is an element.type='TEXT' you use Labeltonum to make it a number
+    listofpar.forEach((element,index) => {
+        if (element.type === 'TEXT') {
+            listofpar[index] = FuncInterface.Label_To_Num(element.value, line);
+        }
+    });
+    
+    console.log(listofpar);
+    var list1 = [];
+    var list2 = [];
+    var lastindex ;
+    
+    var index = 0;
+    
+    while (index < listofpar.length && listofpar[index].value !== ',') {
+        list1.push(listofpar[index]);
+        lastindex = index;
+        index++;   
+    }
+    
+    for (let index = lastindex+2; index < listofpar.length; index++) {
+        list2[index-lastindex-2] = listofpar[index];
+    }
+    //console.log("list1---------------------------------",list1);
+    //console.log("list2---------------------------------",list2);
+
+    return {list1,list2};
+    
+    }
+
+
+
+ ,defadrmod : (listofparam,i) => {
+
+    switch (listofparam.length) {
+        case 1:
+            //immediat
+            return {type:listofparam[0].type,value:listofparam[0].value,mode:0} 
+            
+            break;
+        
+        case 2:
+            //direct
+            if (listofparam[1].value === '*' ) {
+                return {type:listofparam[0].type,value:listofparam[0].value,mode:1} 
+            }else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
+                return {type:'ERROR',value:'Wrong parameters'}
+            }
+            break;
+        
+        case 3:
+            //indirect
+            if (listofparam[1].value === '*' && listofparam[2].value === '*' ) {
+                return {type:listofparam[0].type,value:listofparam[0].value,mode:2} 
+            }   else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
+                return {type:'ERROR',value:'Wrong parameters'}
+
+            }
+            break;
+        case 4:
+            //dep
+            if (listofparam[1].value === '*' && listofparam[2].value === '+' && listofparam[3].type === 'NUMBER'  ) {
+                if (listofparam[3].value < Assembler.MAXNUM)
+                {
+                return {type:listofparam[0].type,value:listofparam[0].value,mode:3,depl:listofparam[3].value}
+            }else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Number size is bigger then MAXNUM",null,i));
+                return {type:'ERROR',value:'Number size is bigger then MAXNUM'}
+            
+        }}else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
+                return {type:'ERROR',value:'Wrong parameters'}
+        }
+            break;
+
+        default:
+            Errorcalm.SyntaxicError.push(new Errorcalm("Wrong parameters",null,i));
+            return {type:'ERROR',value:'Wrong number or type of parameters'}
+    }
+
+
+
+    }
 }
 
 
@@ -172,7 +260,7 @@ export class Assembler{
 
 
 
-var input = ["LABEL le 1437","LABEL labe 4532", "NOT R1*+le", "ROL labe**","ADD R1*,102**","PUSHA"]
+var input = ["LABEL le 1437","LABEL labe 4532", "NOT R1*+le", "ROL labe**","SUB labe*,R1*+10","MOV R1,R1+7","PUSHA"]
 
 let output = new Assembler(input) ;
 
@@ -187,7 +275,7 @@ console.log("\nLabel list: \n",Assembler.Labellist)
 console.log("\nSyntaxic list: \n", (output && output.toAssemble && output.toAssemble.Syntaxiclist) ? output.toAssemble.Syntaxiclist : "Syntaxiclist is undefined");
 
 
-
+//console.log has to be deleted 
 
 
 
