@@ -30,13 +30,15 @@ export class SyntaxicAnalysis {
                                         //  filters for text standards and validity of the text
                                         // check if label already existing 
                                             var found = false ;
+                                            var labelname = firstword.value ;
                                             Assembler.Labellist.forEach(element => { 
                                                 if(element.name === labelname){
                                                     found = true
                                                 }
                                             });
                                         if (!found) {    
-                                        this.Syntaxiclist.push(lexicalList[i]);
+                                        //this.Syntaxiclist.push(lexicalList[i]); 
+                                        //stop pushing here because we don't need it
                                         Assembler.Labellist.push({ name: lexicalList[i][1].value, address: lexicalList[i][2].value, linedeclared:i })
                                     }else{
                                         this.Syntaxiclist.push(new Errorcalm("LABEL already declared",null,i))
@@ -55,12 +57,9 @@ export class SyntaxicAnalysis {
                             }
                       }
                       
-                      
                       functLABEL();
                       break;
                       
-         
-
                       case 'INST0': 
                           // No params instructions: INST0 ::=    RET, PUSHA, POPA
                           // We must have no op after it 
@@ -89,53 +88,156 @@ export class SyntaxicAnalysis {
                         const functINST1 = ()=> {
                             var firstparam = lexicalList[i][1]
                             if (lexicalList[i][0].value == 'WRITE' || lexicalList[i][0].value == 'READ') {
-                                //read or write from or to address so it include addressing mode
+                                //read or write from or to register only
                                 // Labels 
 
                             }else{
+                            // use it as function
+                            // funcnum(lexicalList[i],i)
+                            // add in the body firstparam definition
+                            // var firstparam = lexicalList[i][1]
+
                             switch(firstparam.type){
                             case 'NUMBER' :
                                     //check addressing
+                                    if (firstparam.value < Assembler.MAXNUM) {
+                                    
                                     switch (lexicalList[i].length) {
                                         case 2:
-                                            if (firstparam.value < Assembler.MAXNUM) {
-                                                this.Syntaxiclist.push(lexicalList[i]);
-                                            }else{
-                                                this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
-                                            }
+                                            this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:0 },lexicalList[i][1]]);
+                                            
                                             break;
                                         case 3:
-
+                                            // direct
+                                            // correct here add the operand type and value then put the adr mode with the instruction
+                                            if (lexicalList[i][2].value == '*') {
+                                                this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:1 },lexicalList[i][1]]);
+                                                
+                                            }else{
+                                                this.Syntaxiclist.push(new Errorcalm("Wrong character",null,i))
+                                            }
+                                            
                                         break;
 
                                         case 4:
-
+                                            // indirect
+                                            if (lexicalList[i][2].value == '*' && lexicalList[i][3].value == '*') {
+                                                this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:2 },lexicalList[i][1]]);
+                                            }else{
+                                                this.Syntaxiclist.push(new Errorcalm("Wrong character",null,i))
+                                            }
+                                        
                                         break;
                                     
                                         default:
+                                            this.Syntaxiclist.push(new Errorcalm("Wrong number of operands",null,i))
                                             break;
-                                    }
-
-                                    // Or indirect
-                                    
+                                    }    }else{
+                                        this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
+                                    }                               
                                 
-
                             break;
 
                             case 'REGISTER' :
+
+
+                                
                                 // define addressing mode
                                 // or deplacement
-                                // control possible errors
+                                //console.log("lexicalList[i][1].lenght ",lexicalList[i].length)
+                                switch (lexicalList[i].length) {
+                                    case 2:
+                                        this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:0 },lexicalList[i][1]]);
+                                        
+                                        break;
+                                    case 3:
+                                        // direct
+                                        // correct here add the operand type and value then put the adr mode with the instruction
+                                        if (lexicalList[i][2].value == '*') {
+                                            this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:1 },lexicalList[i][1]]);
+                                            
+                                        }else{
+                                            this.Syntaxiclist.push(new Errorcalm("Wrong character",null,i))
+                                        }
+                                        
+                                    break;
 
+                                    case 4:
+                                        // indirect
+                                        if (lexicalList[i][2].value == '*' && lexicalList[i][3].value == '*') {
+                                            this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:2 },lexicalList[i][1]]);
+                                        }else{
+                                            this.Syntaxiclist.push(new Errorcalm("Wrong character",null,i))
+                                        }
+                                    
+                                    break;
+
+                                    case 5: 
+                                        //deplacement 
+                                        
+                                       
+                                        if (lexicalList[i][2].value === '*' && lexicalList[i][3].value === '+' ) {
+                                            switch (lexicalList[i][4].type) 
+                                        {
+                                            case 'NUMBER':
+                                            this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:3 },lexicalList[i][1],lexicalList[i][4]]);
+                                            break;
+                                            case 'TEXT':
+                                            this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:3 },lexicalList[i][1],FuncInterface.Label_To_Num(lexicalList[i][4].value,i)]);
+                                            break;
+                                       
+                                        }}
+                                        break;
+                                    default:
+                                        this.Syntaxiclist.push(new Errorcalm("Wrong number of operands",null,i))
+                                        break;
+                                }    
                             
                             break;
                             case 'TEXT' :
                                     //+ ajouter opp avec labels,  I guess DONE
-                                    this.Syntaxiclist.push([lexicalList[i][0],FuncInterface.Label_To_Num(firstparam.value,i)]);
+                                    // Do the needed operations after transformations and ADD TESTs it's not safe here !
                                     // add addressing modes direct and indirect for labels
+
+                                    //check if it's present in label list
+                                    
+                                    switch (lexicalList[i].length) {
+                                        case 2:
+                                            this.Syntaxiclist.push([{type:lexicalList[i][0].type, value:lexicalList[i][0].value, adrmode:0 },{type:FuncInterface.Label_To_Num(firstparam.value,i).type, value:FuncInterface.Label_To_Num(firstparam.value,i).value}]);
+                                            
+                                            break;
+                                        case 3:
+                                            // direct
+                                            if (lexicalList[i][2].value == '*') {
+                                                this.Syntaxiclist.push([{type:lexicalList[i][0].type, value:lexicalList[i][0].value, adrmode:1 },{type:FuncInterface.Label_To_Num(firstparam.value,i).type, value:FuncInterface.Label_To_Num(firstparam.value,i).value}]);
+                                                
+                                            }else{
+                                                this.Syntaxiclist.push(new Errorcalm("Wrong character",null,i))
+                                            }
+                                            
+                                        break;
+                                    
+                                        case 4:
+                                            // indirect
+                                            if (lexicalList[i][2].value == '*' && lexicalList[i][3].value == '*') {
+                                                this.Syntaxiclist.push([{type:lexicalList[i][0].type, value:lexicalList[i][0].value, adrmode:2 },{type:FuncInterface.Label_To_Num(firstparam.value,i).type, value:FuncInterface.Label_To_Num(firstparam.value,i).value}]);
+                                            }else{
+                                                this.Syntaxiclist.push(new Errorcalm("Wrong character",null,i))
+                                            }
+                                        
+                                        break;
+                                    
+                                        default:
+                                            this.Syntaxiclist.push(new Errorcalm("Wrong number of operands",null,i))
+                                            break;
+                                    }
+
+                                    
+                                    
+
+                                    
+
                             }
-                        
-                        
                         
                         }
                                                 
@@ -147,12 +249,54 @@ export class SyntaxicAnalysis {
                       break ;
                       
                       case 'INST2':
-                        
+                        //check if there is a comma if not throw error which is comma missing
+                        var nocomma = true ;
+                        lexicalList[i].forEach(element => {
+                            if (element.value == ',') {
+                                nocomma = false ;
+                            }});
+
+                        if (nocomma)  
+                        {
+                            this.Syntaxiclist.push(new Errorcalm("Comma missing",null,i))
+                        }
+                        else{
+
+
+                            switch (lexicalList[i][1].type) {
+                                case 'REGISTER':
+                                //check for addressing modes for the two operands treat each one as one operand 
+                                //check for deplacement
+
+                                break;
+                                case 'TEXT':
+                                //check if it's present in label list
+                                //then it would be same treatment as a number
+                                break;
+                                case 'NUMBER':
+                                    if (lexicalList[i][0].value == 'MOV') {
+                                        this.Syntaxiclist.push(new Errorcalm("Number can't be first operand",null,i))
+                                    }else{
+                                        //check for addressing modes for the two operands treat each one as one operand 
+                                        switch (lexicalList[i].length) {
+                                            case 4:
+                                                
+
+                                    }
+                        }
+                    }}
+
                       break ;
+
+                      default:
+                        //error
+                            break;
                           
              
                   
             }
+            //console.log(this.Syntaxiclist)
+
            
           
         }

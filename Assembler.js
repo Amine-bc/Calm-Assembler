@@ -10,13 +10,12 @@ export const FuncInterface ={
                 labelobj = element
             }
         });
-    
-        console.log(labelobj)
+        //console.log(labelobj)
         if (labelobj == false)
         {
             //error
             Errorcalm.set_syntaxicError(new Errorcalm("Label not found",null,linenumber));
-            return {type: 'ERROR', value: 'Label not found'};
+            return {type: 'ERROR', value: null};
         }else{
             //return the address
             return {type: 'NUMBER', value: labelobj.address} 
@@ -27,17 +26,23 @@ export const FuncInterface ={
     confirmationfunction : (input) => {
         var errormsg = []
         var err = false ;
-        console.log(input)
+        //console.log(input)
+        // check Errorcalm.SyntaxicError first else do the thing you where doing
+        if (Errorcalm.SyntaxicError.length > 0) {
+            Errorcalm.printError();
+            }
+        else{
         for (let index = 0; index < input.length; index++) {
             if (input[index] instanceof Errorcalm) {
                 errormsg.push({line: input[index].linenum, message:input[index].message})
                 err = true
             }
-        }
-        return {errors: errormsg, status: !err}
-        
+        }}
+        Errorcalm.addtoSyntaxicError(errormsg);
+        return {errors: errormsg, status: !err};
     
     },
+
 
 
 }
@@ -48,18 +53,16 @@ export class Assembler{
     static MAXNUM = 6000;
     static Labellist = []
     // List of strings to exclude
-    static excludedStrings = ['RET', 'PUSHA', 'POPA', 'NEG', 'NOT', 'SHL', 'SHR', 'READ', 'WRITE', 'PUSH', 'POP', 'ROR', 'ROL', 'CALL', 'BE', 'BNE', 'BS', 'BI', 'BIE', 'BSE', 'BR', 'NAND', 'CMP', 'MOV', 'ADD', 'SUB', 'MUL', 'DIV', 'AND', 'OR', 'XOR', 'NOR', 'R1', 'R2', 'R3', 'R4', 'ACC', 'BR', 'IR', 'SR', 'R1R', 'R2R', 'R3R', 'ACCR', 'R1L', 'R2L', 'R3L', 'ACCL'];
+    static excludedStrings = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~','RET', 'PUSHA', 'POPA', 'NEG', 'NOT', 'SHL', 'SHR', 'READ', 'WRITE', 'PUSH', 'POP', 'ROR', 'ROL', 'CALL', 'BE', 'BNE', 'BS', 'BI', 'BIE', 'BSE', 'BR', 'NAND', 'CMP', 'MOV', 'ADD', 'SUB', 'MUL', 'DIV', 'AND', 'OR', 'XOR', 'NOR', 'R1', 'R2', 'R3', 'R4', 'ACC', 'BR', 'IR', 'SR', 'R1R', 'R2R', 'R3R', 'ACCR', 'R1L', 'R2L', 'R3L', 'ACCL'];
                       
 
     constructor(input){
         let lexicalList = input.map((t,index)=> {return new Lexer(t,index).LexicalList} )
-        if (Lexer.Errors.length > 0) {
+        if (Errorcalm.LexicalError.length > 0) {
             Errorcalm.printError();
         }else{
-        
-
         this.input = lexicalList;
-        //console.log(lexicalList)
+        console.log("\nLexicalList:\n",lexicalList)
         this.toAssemble = new SyntaxicAnalysis(this.input);
         let ret = FuncInterface.confirmationfunction(this.toAssemble.Syntaxiclist);
         if (!ret.status) {
@@ -82,7 +85,7 @@ export class Assembler{
                             return '0021';
                         case 'POPA':
                             return '0023';
-                    
+                            
                     }
                 case 'INST1':
                     let oppcode = "";
@@ -169,7 +172,7 @@ export class Assembler{
 
 
 
-var input = ["LABEL imo 1437","LABEL rani 4532", "NOT 16* + 88 ", "ROL imo","PUSHA"]
+var input = ["LABEL le 1437","LABEL labe 4532", "NOT R1*+le", "ROL labe**","ADD R1*,102**","PUSHA"]
 
 let output = new Assembler(input) ;
 

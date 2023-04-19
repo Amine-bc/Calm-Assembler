@@ -113,9 +113,8 @@ export class Lexer {
                 };
               }else{
                 Lexer.Errors.push(new Errorcalm("Invalid string", "LEXER", line)) ; //change this 0 to the line number
-                Errorcalm.set_LexicalError(Lexer.Errors);
+                Errorcalm.set_LexicalError(new Errorcalm("Invalid string", "LEXER", line));
               }
-              
           }
         } else {
           return {
