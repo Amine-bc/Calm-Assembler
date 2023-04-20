@@ -177,7 +177,7 @@ export class Assembler{
                     }
                 case 'INST1':
                     let oppcode = "";
-                    let reg_mod = "" ;
+                    var reg_mod = "" ;
                     let size = "";
                     let adr= "";
                     let operand="";
@@ -238,9 +238,23 @@ export class Assembler{
                             break;
 
                     }
-                    switch(element){
-                    //addressing modes
+                    switch(element.adrmode){
+                        case 0:
+                            reg_mod = '00';
+                            break;
+                        case 1:
+                            reg_mod = '01';
+                            break;
+                        case 2:
+                            reg_mod = '10';
+                            break;
+                        case 3:
+                            reg_mod = '11';
+
+                            break;
                     }
+                    //addressing modes
+                    
                     if (condition){
                         //size
                         // add operand
@@ -248,8 +262,6 @@ export class Assembler{
                     if (condition){
                     //address if availble on 16 bits <=> 4 octects
                     }
-
-
             }
         }
 
@@ -260,7 +272,7 @@ export class Assembler{
 
 
 
-var input = ["LABEL le 1437","LABEL la,be 4532", "NOT R1*+le", "ROL labe**","SUB labe*,R1*+10","MOV R1,R1*+7","PUSHA"]
+var input = ["LABEL le 1437","LABEL la,be 4532", "NOT R1", "ROL labe**","SUB labe*,R1*+10","MOV R1,R1*+7","PUSHA"]
 
 let output = new Assembler(input) ;
 
