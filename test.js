@@ -30,7 +30,6 @@ This will help you treat labels as normal addresses in memory
 
 
 
-
 //---------------YOU---CAN--USE---THOSE---IN---YOUR---CODE------DEPLACEMENT------IN----REGISTERS-----//
 
 

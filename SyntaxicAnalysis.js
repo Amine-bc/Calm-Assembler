@@ -53,7 +53,12 @@ export class SyntaxicAnalysis {
                                  this.Syntaxiclist.push(new Errorcalm("LABEL must be a number",null,i))
                             }
                           }else{
-                              this.Syntaxiclist.push(new Errorcalm("LABEL must have only two operands",null,i))
+                            if (Lexer.isValidString(lexicalList[i][2].value )) {
+                                this.Syntaxiclist.push(new Errorcalm("LABEL must have only two operands",null,i))
+                            }else
+                            {
+                                this.Syntaxiclist.push(new Errorcalm("LABEL name is not valid",null,i))
+                            }
                             }
                       }
                       

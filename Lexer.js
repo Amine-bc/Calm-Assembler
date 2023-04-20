@@ -24,7 +24,7 @@ export class Lexer {
   }
     constructor(code,line) {
       //console.log(code.match(/([a-zA-Z0-9]+\d*(?:[a-zA-Z09]+)?|\*|,|\+)/g))
-      this.LexicalList = code.match(/([a-zA-Z0-9]+\d*(?:[a-zA-Z0-9]+)?|\*|,|\+)/g).filter(function (t) {
+      this.LexicalList = code.match(/([a-zA-Z0-9]+\d*(?:[a-zA-Z0-9]+)?|\*|,|\+,,|\~|,|\`|,|\!|,|\@|,|\#|,|\$|,|\%|,|\^|,|\&|,|\*|,|\(|,|\)|,|\-|,|\_|,|\=|,|\+|,|\[|,|\]|,|\{|,|\}|,|\;|,|\:|,|\'|,|\"|,|\,|,|\.|,|\<|,|\>|,|\?|,|\\|)/g).filter(function (t) {
         return t.length > 0;
       }).map(function (t) {
         if (isNaN(t)) {
