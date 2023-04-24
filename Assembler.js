@@ -766,11 +766,11 @@ export class Assembler{
 
         }   
         static assemblecode(input){
-            let output = new Assembler(input) ;
+            var output = new Assembler(input) ;
             var assembledcode = [];
             var toassmb = (output && output.toAssemble && output.toAssemble.Syntaxiclist) ? output.toAssemble.Syntaxiclist : "Syntaxiclist is undefined";
             
-            if ( Errorcalm.SyntaxicError ===[]) {
+            if ( Errorcalm.SyntaxicError.length === 0) {
 
                 for (let index = 0; index < toassmb.length; index++) {
          
@@ -793,17 +793,14 @@ export class Assembler{
 
 
 
-var input = ["LABEL le 1437","LABEL labe 4532",'ADD R1H,BR', "MOV BR*+IR+5,10", "ADD BR*+10,IR*+10","DIV 20*,2* ","BE 35",'POPA',"ROL R3",'NEG R1R']
+var input = ["LABEL le 1437","LABEL labe 4532",'ADD R1,BR', "MOV BR*+IR+5,10", "ADD BR*+10,IR*+10","DIV 20*,2* ","BE 35",'POPA',"ROL R3",'NEG R1R']
 
 Assembler.assemblecode(input)
 
+
+
 /*
 let output = new Assembler(input) ;
-
-
-
-
-
 
 console.log("\nLabel list: \n",Assembler.Labellist)
 
@@ -815,13 +812,13 @@ var assembledcode = []
 for (let index = 0; index < toassmb.length; index++) {
          
     assembledcode.push(Assembler.assemble(toassmb[index])) 
-    console.log("\nAssembled code: \n",assembledcode)
+    //console.log("\nAssembled code: \n",assembledcode)
 
 }
 
 console.log("\nAssembled code: \n",assembledcode)
 //console.log has to be deleted    03cd11b4000a 
-*/
+
 /*
 console.log("\ncode:",
 Assembler.assemble(  [
