@@ -92,9 +92,15 @@ export class SyntaxicAnalysis {
                         //|------------------------------------------------------------------------------------------
                         const functINST1 = ()=> {
                             var firstparam = lexicalList[i][1]
-                            if (lexicalList[i][0].value == 'WRITE' || lexicalList[i][0].value == 'READ') {
+                            if (['NEG','NOT', 'SHL', 'SHR', 'READ', 'WRITE', 'PUSH', 'POP', 'ROR', 'ROL'].includes( lexicalList[i][0].value )) {
                                 //read or write from or to register only
-                                // Labels 
+                                // Labels are not allowed
+                                if (firstparam.type == 'REGISTER'  && lexicalList[i].length == 2) {
+                                    this.Syntaxiclist.push([{  type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:0  },lexicalList[i][1]]);
+                                }
+                                else{
+                                    this.Syntaxiclist.push(new Errorcalm("INST1 must have one register as operand",null,i))
+                                }
 
                             }else{
                             // use it as function
@@ -112,7 +118,8 @@ export class SyntaxicAnalysis {
                                             this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:0 },lexicalList[i][1]]);
                                             
                                             break;
-                                        case 3:
+                                       /*
+                                            case 3:
                                             // direct
                                             // correct here add the operand type and value then put the adr mode with the instruction
                                             if (lexicalList[i][2].value == '*') {
@@ -133,27 +140,24 @@ export class SyntaxicAnalysis {
                                             }
                                         
                                         break;
-                                    
+                                    */
                                         default:
-                                            this.Syntaxiclist.push(new Errorcalm("Wrong number of operands",null,i))
+                                            this.Syntaxiclist.push(new Errorcalm("Wrong number or type of operands",null,i))
                                             break;
                                     }    }else{
                                         this.Syntaxiclist.push(new Errorcalm("Number size is bigger then MAXNUM",null,i))
                                     }                               
                                 
                             break;
-
+                            /*
                             case 'REGISTER' :
-
-
-                                
                                 // define addressing mode
                                 // or deplacement
                                 //console.log("lexicalList[i][1].lenght ",lexicalList[i].length)
                                 switch (lexicalList[i].length) {
                                     case 2:
                                         this.Syntaxiclist.push([{type:lexicalList[i][0].type, value: lexicalList[i][0].value, adrmode:0 },lexicalList[i][1]]);
-                                        
+                    
                                         break;
                                     case 3:
                                         // direct
@@ -199,6 +203,7 @@ export class SyntaxicAnalysis {
                                 }    
                             
                             break;
+                            */
                             case 'TEXT' :
                                     //+ ajouter opp avec labels,  I guess DONE
                                     // Do the needed operations after transformations and ADD TESTs it's not safe here !
@@ -211,6 +216,7 @@ export class SyntaxicAnalysis {
                                             this.Syntaxiclist.push([{type:lexicalList[i][0].type, value:lexicalList[i][0].value, adrmode:0 },{type:FuncInterface.Label_To_Num(firstparam.value,i).type, value:FuncInterface.Label_To_Num(firstparam.value,i).value}]);
                                             
                                             break;
+                                            /*
                                         case 3:
                                             // direct
                                             if (lexicalList[i][2].value == '*') {
@@ -231,9 +237,9 @@ export class SyntaxicAnalysis {
                                             }
                                         
                                         break;
-                                    
+                                    */
                                         default:
-                                            this.Syntaxiclist.push(new Errorcalm("Wrong number of operands",null,i))
+                                            this.Syntaxiclist.push(new Errorcalm("Wrong number or type of operands",null,i))
                                             break;
                                     }
 
@@ -265,11 +271,14 @@ export class SyntaxicAnalysis {
                             this.Syntaxiclist.push(new Errorcalm("Comma missing",null,i))
                         }
                         else{
+                            // check also for first operand based ind and second indexed or based or opposite 
+                            // check if size of first list == size of second list and assign it to the size of the instruction
                             
                             var list1,list2 =[];
                             list1 = FuncInterface.addrmod(lexicalList[i].slice(1),i).list1 ;
                             //console.log("list1",list1[0].type)
                             list2 = FuncInterface.addrmod(lexicalList[i].slice(1),i).list2 ;
+         
                             if(lexicalList[i][1].type=='NUMBER' && lexicalList[i][0].value == 'MOV') {
                                 //console.log("here------------------------")
                                         this.Syntaxiclist.push(new Errorcalm("Number can't be first operand",null,i))
@@ -277,8 +286,15 @@ export class SyntaxicAnalysis {
                             }else{
                             //console.log("\nlist1",list1,"\nlist2",list2)
                             //console.log("\nlist1",FuncInterface.defadrmod(list1),"\nlist2",FuncInterface.defadrmod(list2))
-                           this.Syntaxiclist.push([lexicalList[i][0],FuncInterface.defadrmod(list1,i),FuncInterface.defadrmod(list2,i)]);
-                }}
+                            
+                            if (FuncInterface.defadrmod(list1,i).size !== FuncInterface.defadrmod(list2,i).size) {
+                                this.Syntaxiclist.push(new Errorcalm("Wrong size of operands",null,i))
+                                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong size of operands",null,i))
+                                
+                            }else{
+                                this.Syntaxiclist.push([{type:lexicalList[i][0].type, value:lexicalList[i][0].value,size:FuncInterface.defadrmod(list1,i).size},FuncInterface.defadrmod(list1,i),FuncInterface.defadrmod(list2,i)]);
+                            }
+                            }}
 
                       break ;
 

@@ -62,3 +62,15 @@ if (lexicalList[i].length == 5) {
 // add case of when there is an indirect addressing mode
 this.Syntaxiclist.push(new Errorcalm("Wrong expression",null,i))
 }
+
+
+
+
+
+
+
+
+
+
+
+
