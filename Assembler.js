@@ -793,7 +793,7 @@ export class Assembler{
 
 
 
-var input = ["LABEL le 1437","LABEL labe 4532",'ADD R1,BR', "MOV BR*+IR+5,10", "ADD BR*+10,IR*+10","DIV 20*,2* ","BE 35",'POPA',"ROL R3",'NEG R1R']
+var input = ["LABEL le 1437","LABEL labe 4532",'ADD 100,BR', "MOV BR*+IR+5,10", "ADD BR*+10,IR*+10","DIV 20*,2* ","BE 35",'POPA',"ROL R3",'NEG R1R']
 
 Assembler.assemblecode(input)
 
