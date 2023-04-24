@@ -4,104 +4,116 @@ import {SyntaxicAnalysis} from './SyntaxicAnalysis.js'
 export const FuncInterface ={
 
     adrmap : (txt,size)=>{
+        var adr='';
         switch(txt){
-            case '0':
+            case 0:
                 adr = '000';
                 break;
-            case '1':
+            case 1:
                 adr = '001';
                 break;
-            case '2':
+            case 2:
                 adr = '010';
                 break;
-            case '3':
+            case 3:
                 adr = `11${size}`;
                 //or
                 break;
-            case '4':
+            case 4:
                 adr = '100';
                 break;
-            case '5':
+            case 5:
                 adr = '011';
                 break;
-            case '6':
+            case 6:
                 adr = '101';
                 break;
         }
         return adr
     },
     regmap : (txt)=>{
+        var size = '';
+        var reg = '';
         switch(txt){
             case 'R1':
                 reg = '000';
-                size = '1';
                 break;
             case 'R2':
                 reg = '001';
-                size = '1';
                 break;
             case 'R3':
                 reg = '010';
-                size = '1';
                 break;
             case 'R4':
                 reg = '011';
-                size = '1';
                 break;
             case 'ACC':
                 reg = '100';
-                size = '1';
                 break;
             case 'BR':
                 reg = '101';
-                size = '1';
                 break;
             case 'IR':
                 reg = '110';
-                size = '1';
                 break;
             case 'SR':
                 reg = '111';
-                size = '1';
                 break;
             case 'R1R':
                 reg = '000';
-                size = '0';
                 break;
             case 'R2R':
                 reg = '001';
-                size = '0';
                 break;
             case 'R3R':
                 reg = '010';
-                size = '0';
                 break;
             case 'ACCR':
                 reg = '011';
-                size = '0';
                 break;
             case 'R1L':
                 reg = '100';
-                size = '0';
                 break;
             case 'R2L':
                 reg = '101';
-                size = '0';
                 break;
             case 'R3L':
                 reg = '110';
-                size = '0';
                 break;
             case 'ACCL':
                 reg = '111';
-                size = '0';
                 break;
             
             default:
                 break;
         }
-        return {reg,size}
+        return reg
     },
+    
+    decimalTobinByte:(decimalString,size)=>{
+        let decimalNumber = parseInt(decimalString); // convert string to number
+        let binaryNumber = decimalNumber.toString(2); // convert number to binary string
+        while (binaryNumber.length < size) {
+            binaryNumber = '0' + binaryNumber;
+        }
+
+        return binaryNumber;
+    }
+    ,
+    decimalToHexByte:(decimalString)=>{
+
+        // Convert decimal to hexadecimal string
+        let hexString = parseInt(decimalString, 10).toString(16);
+        
+        // Pad the hexadecimal string with leading zeros to 4 bytes (8 characters)
+        while (hexString.length < 2) {
+          hexString = '0' + hexString;
+        }
+        
+        // Return the padded hexadecimal string
+        return hexString;
+    },
+
 
     binaryToHexoneByte : (decimalString)=>{
         // Convert decimal to hexadecimal string
@@ -116,12 +128,12 @@ export const FuncInterface ={
         return hexString;
       },
 
-    decimalToHex2Bytes : (decimalString)=>{
+    decimalToHex : (decimalString,size)=>{
         // Convert decimal to hexadecimal string
         let hexString = parseInt(decimalString, 10).toString(16);
         
         // Pad the hexadecimal string with leading zeros to 4 bytes (8 characters)
-        while (hexString.length < 4) {
+        while (hexString.length < size) {
           hexString = '0' + hexString;
         }
         
@@ -129,12 +141,12 @@ export const FuncInterface ={
         return hexString;
       },
 
-      binaryToHex2Bytes: (binaryString)=>{
+      binaryToHex: (binaryString,size)=>{
         // Convert decimal to hexadecimal string
         let hexString = parseInt(binaryString, 2).toString(16);
         
         // Pad the hexadecimal string with leading zeros to 4 bytes (8 characters)
-        while (hexString.length < 4) {
+        while (hexString.length < size) {
           hexString = '0' + hexString;
         }
         
@@ -238,53 +250,68 @@ export const FuncInterface ={
         
         case 2:
             //direct
-            if (listofparam[1].value === '*' ) {
+            if(  listofparam[0].type === 'REGISTER'   )
+            {
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
+                return {type:'ERROR',value:'Wrong number or type of parameters'}
+            }else{
+            if ( listofparam[1].value === '*' && (listofparam[0].type === 'NUMBER' || listofparam[0].type === 'TEXT') ) {
                 return {type:listofparam[0].type,value:listofparam[0].value,adrmode:1,size:sizeofpar} 
             }else{
                 Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
-                return {type:'ERROR',value:'Wrong parameters'}
-            }
+                return {type:'ERROR',value:'Wrong number or type of parameters'}
+            }}
             break;
         
         case 3:
             //indirect
-            if (listofparam[1].value === '*' && listofparam[2].value === '*' ) {
-                return {type:listofparam[0].type,value:listofparam[0].value,adrmode:2,size:sizeofpar} 
-            }   else{
+            if(  listofparam[0].type ==='REGISTER'   )
+            {
                 Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
-                return {type:'ERROR',value:'Wrong parameters'}
+                return {type:'ERROR',value:'Wrong number or type of parameters'}
+            }else{
+            if (listofparam[1].value === '*' && listofparam[2].value === '*' && (listofparam[0].type === 'NUMBER' || listofparam[0].type === 'TEXT')) {
+                return {type:listofparam[0].type,value:listofparam[0].value,adrmode:2,size:sizeofpar} 
+            }else{
+                Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
+                return {type:'ERROR',value:'Wrong number or type of parameters'}
             }
+        }
             break;
         case 4:
             //dep
             
-                    if (listofparam[1].value === '*' && listofparam[2].value === '+' ) {
+                    if (listofparam[1].value === '*' && listofparam[2].value === '+' && listofparam[3].type ==='NUMBER' ) {
 
-                        switch (listofparam[3].type) {
+                        switch (listofparam[0].type) {
                             case 'NUMBER':
-                                if (listofparam[3].value < Assembler.MAXNUM)
+                                if (listofparam[3].value <= Assembler.MAXNUM)
                                 {
                                 return {type:listofparam[0].type,value:listofparam[0].value,mode:3,depl:listofparam[3].value,size:sizeofpar}
+
                                 }else{
+
                                 Errorcalm.SyntaxicError.push(new Errorcalm("Number size is bigger then MAXNUM",null,i));
                                 return {type:'ERROR',value:'Number size is bigger then MAXNUM'}
 
                                 }
                                 break;
+
                             case 'REGISTER':
-                                if (listofparam[3].value === 'BR' && listofparam[0].value !=='BR')
+                                if (listofparam[0].value === 'BR' && listofparam[3].value !=='BR')
                                 {
-                                        return {type:listofparam[0].type,value:listofparam[0].value,adrmode:5,size:sizeofpar}
+                                        return {type:'NUMBER',value:listofparam[3].value,adrmode:5,size:sizeofpar}
                                 }else{
-                                    if (listofparam[3].value === 'IR' && listofparam[0].value !=='IR')
+                                    if (listofparam[0].value === 'IR' && listofparam[3].value !=='IR')
                                     {
-                                        return {type:listofparam[0].type,value:listofparam[0].value,adrmode:4,size:sizeofpar}
+                                        return {type:'NUMBER',value:listofparam[3].value,adrmode:4,size:sizeofpar}
                                     }else{
                                         Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
                                         return {type:'ERROR',value:'Wrong number or type of parameters'}
                                     }
 
                                 }
+                                break;
                                 
                         }          
                     
@@ -292,23 +319,19 @@ export const FuncInterface ={
                         Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
                         return {type:'ERROR',value:'Wrong number or type of parameters'}              
                     }
-                        
-                break;
-            
+                                    
             
     
             break;
         
             case 6:
                 // based indexed
-                if ( listofparam[0].type ==='REGISTER' && listofparam[0].value !=='IR' && listofparam[0].value !=='BR' && listofparam[1].value === '*' && listofparam[2].value === '+' && listofparam[3].value === 'BR' && listofparam[4].value === '+' && listofparam[5].value === 'IR') {
-                    return {type:listofparam[0].type,value:listofparam[0].value,adrmode:6,size:sizeofpar}
+                if ( (listofparam[0].value =='IR' || listofparam[0].value =='BR') && listofparam[1].value === '*' && listofparam[2].value === '+' && (listofparam[3].value === 'BR' || listofparam[3].value === 'IR') && listofparam[4].value === '+' && listofparam[5].type === 'NUMBER' && listofparam[3].value !== listofparam[0].value)  {
+                    return {type:'NUMBER',value:listofparam[5].value,adrmode:6,size:sizeofpar}
                 }else{                
-                    if ( listofparam[0].type ==='REGISTER' && listofparam[0].value !=='IR' && listofparam[0].value !=='BR' && listofparam[1].value === '*' && listofparam[2].value === '+' && listofparam[3].value === 'IR' && listofparam[4].value === '+' && listofparam[5].value === 'BR' ) {
-                        return {type:listofparam[0].type,value:listofparam[0].value,adrmode:6,size:sizeofpar}
-                }else{
+                   
                     Errorcalm.SyntaxicError.push(new Errorcalm("Wrong number or type of parameters",null,i));
-                }
+                    return {type:'ERROR',value:'Wrong number or type of parameters'};
             }
             break;
 
@@ -359,103 +382,230 @@ export class Assembler{
             switch(element.type){
 
                 case 'INST2':
-                    var opcode ;
+                    var opcode='' ;
                     var size = element.size ;
-                    var ind ;
-                    var regmod1 ;
+                    var ind='' ;
+                    var regmod1='' ;
                     var regmod2 ;
-                    var op1;
-                    var op2;
-                    var dep1;
-                    var dep2;
+                    var op1='';
+                    var op2='';
+                    var dep1='';
+                    var dep2='';
+                    var code='' ;
 
 
                     switch(element.value){
                         case 'ADD':
-                            opcode = FuncInterface.decimalToHex2Bytes(`0${size}`);
+                            opcode = `0000000${size}`;
                             break;
                         case 'SUB':
-                            opcode = FuncInterface.decimalToHex2Bytes(`1${size}`);
+                            opcode = `0000001${size}`;
                             break;
                         case 'MUL':
-                            opcode = FuncInterface.decimalToHex2Bytes(`10${size}`);
+                            opcode = `0000010${size}`;
                             break;
                         case 'DIV':
-                            opcode = FuncInterface.decimalToHex2Bytes(`11${size}`);
-                            break;
+                        opcode = `0000011${size}`;
+                        break;
                         case 'AND':
-                            opcode = FuncInterface.decimalToHex2Bytes(`100${size}`);
-                            break;
+                            opcode = `0000100${size}`;
+                        break;
                         case 'OR':
-                            opcode = FuncInterface.decimalToHex2Bytes(`101${size}`);
+                            opcode = `0000101${size}`;
                             break;
                         case 'XOR':
-                            opcode = FuncInterface.decimalToHex2Bytes(`110${size}`);
+                            opcode = `0000110${size}`;
                             break;
                         case 'NOR':
-                            opcode = FuncInterface.decimalToHex2Bytes(`111${size}`);
+                            opcode = `0000111${size}`;
                             break;
                         case 'NAND':
-                            opcode = FuncInterface.decimalToHex2Bytes(`1000${size}`);
+                            opcode = `0001000${size}`;
                             break;
                         case 'CMP':
-                            opcode = FuncInterface.decimalToHex2Bytes(`1001${size}`);
+                            opcode = `0001001${size}`;
                             break;
                         case 'MOV':
-                            opcode = FuncInterface.decimalToHex2Bytes(`1100${size}`);
-                            break;
+                            opcode = `0001100${size}`;
+
+                        break;
                         default:
                             opcode = 'error';
                             break;
                     }
+                    //opcode = FuncInterface.binaryToHex(opcode,4)
+                    //console.log(input[1].type,input[2].type)
+                    switch(input[1].type+','+input[2].type){
 
-                    switch(input[1].type,input[2].type){
-                        case 'REGISTER','REGISTER':
-                            ind = '00';
+                        case 'REGISTER,REGISTER':
+                       ind = '00';
                             regmod1 = FuncInterface.regmap(input[1].value);
                             regmod2 = FuncInterface.regmap(input[2].value);
+
+                            code = opcode + ind + regmod1 + regmod2
+
+
+                            //return {codehex:FuncInterface.binaryToHex(code,code.length/4),codebin:code};              
+                            return FuncInterface.binaryToHex(code,code.length/4)  
+  
+                            break;
+                            
                         break;
-                        case 'REGISTER','NUMBER':
-                            ind = '01';
+                        case 'REGISTER,NUMBER':
+                               ind = '01';
                             regmod1 = FuncInterface.regmap(input[1].value);
-                            regmod2 = FuncInterface.adrmap(input[2].value,size);
+                            regmod2 = FuncInterface.adrmap(input[2].adrmode,size);
+                            console.log(regmod2)
+                                        
+                            switch (regmod2) {
+                                case '000':
+                                    let long = size == 0 ? 8 : 16;
+                                    op2 = FuncInterface.decimalTobinByte(input[2].value,long );
+                                    break;  
+                                case '001':
+                                case '010':
+                                    op2 = FuncInterface.decimalTobinByte(input[2].value,16 );
+                                    opcode = opcode.slice(0, -1) + '1';
+                                    break;                      
+                                case '110': 
+                                dep2 = FuncInterface.decimalTobinByte(input[2].value,8);
+                                break;
+                                case '111':
+                                case '011':
+                                case '100':
+                                case '101':
+                                    dep2 = FuncInterface.decimalTobinByte(input[2].value,16);
+                                break;
+
+                                default:
+                                    break;
+                                                    
+                            }
+                            code = opcode + ind + regmod1 + regmod2 ;
+                            code=code+op2+dep2;
+                            //console.log(opcode,ind,regmod1,regmod2,op1,op2,dep1,dep2);
+                            //return {codehex:FuncInterface.binaryToHex(code,code.length/4),codebin:code};           
+                            return FuncInterface.binaryToHex(code,code.length/4)  
                             break;
 
-                        case 'NUMBER','REGISTER':
+                        case 'NUMBER,REGISTER':
                             ind = '10';
-
-                            regmod1 = FuncInterface.adrmap(input[1].value,size);
+                            regmod1 = FuncInterface.adrmap(input[1].adrmode,size);
                             regmod2 = FuncInterface.regmap(input[2].value);
+                                        
+                            switch (regmod1) {
+                                case '000':
+                                    let long = size == 0 ? 8 : 16;
+                                    op1 = FuncInterface.decimalTobinByte(input[1].value,long);
+                                    break; 
+                                case '001':
+                                case '010':
+                                    op1 = FuncInterface.decimalTobinByte(input[1].value,16);
+                                    opcode = opcode.slice(0, -1) + '1';
+                                    break;                      
+                                case '110':  
+                                    dep1 = FuncInterface.decimalTobinByte(input[1].value,8);
+                                break;
+                                case '111':
+                                case '011':
+                                case '100':
+                                case '101':
+                                    dep1 = FuncInterface.decimalTobinByte(input[1].value,16);
+                                break;
 
-                            break;  
-                        case 'NUMBER','NUMBER':
+                                default:
+                                    break;
+                            
+                                
+                            }
+                            code = opcode + ind + regmod1 + regmod2 ;
+                            code=code +op1+dep1;
+
+                            //return {codehex:FuncInterface.binaryToHex(code,code.length/4),codebin:code};   
+                            return FuncInterface.binaryToHex(code,code.length/4)
+                                                     break;  
+
+                        case 'NUMBER,NUMBER':
                             ind = '11';
-                            regmod1 = FuncInterface.adrmap(input[1].value,size);
-                            regmod2 = FuncInterface.adrmap(input[2].value,size);
+                            regmod1 = FuncInterface.adrmap(input[1].adrmode,size);
+                            regmod2 = FuncInterface.adrmap(input[2].adrmode,size);
+                            
+                                        
+                            switch (regmod1) {
+                                case '000':
+                                    let long = size == 0 ? 8 : 16;
+                                    op1 = FuncInterface.decimalTobinByte(input[1].value,long);
+                                    break;  
+                                case '001':
+                                case '010':
+                                    op1 = FuncInterface.decimalTobinByte(input[1].value,16);
+                                    opcode = opcode.slice(0, -1) + '1';
+                                    break;
+                                case '110':
+                                    dep1 = FuncInterface.decimalTobinByte(input[1].value,8);
+                                break;
+                                case '111':
+                                case '011':
+                                case '100':
+                                case '101':
+                                    dep1 = FuncInterface.decimalTobinByte(input[1].value,16);
+                                break;
+
+                                default:
+                                    dep1,op1='error';
+                                    break;
+                            
+                                
+                            }
+                            
+                            switch (regmod2) {
+                                case '000':
+                                    let long = size == 0 ? 8 : 16;
+                                    op2 = FuncInterface.decimalTobinByte(input[2].value,long);
+                                    break;      
+                                case '001':
+                                case '010':
+                                    op2 = FuncInterface.decimalTobinByte(input[2].value,16);
+                                    opcode = opcode.slice(0, -1) + '1';
+                                    break;            
+                                case '110':      
+                                    dep2 = FuncInterface.decimalTobinByte(input[2].value,8);
+                                break;                      
+                                case '111':
+                                case '011':
+                                case '100':
+                                case '101':
+                                    dep2 = FuncInterface.decimalTobinByte(input[2].value,16);
+                                break;
+                                
+                                default:
+                                    dep2,op2='error';
+                                    break;
+                                
+                            }
+
+                            code = opcode  + ind + regmod1 + regmod2 ;
+                            code= code + op1 + dep1;
+                            code= code + op2+dep2;
+                            //return {codehex:FuncInterface.binaryToHex(code,code.length/4),codebin:code};
+                            return FuncInterface.binaryToHex(code,code.length/4)
                             break;
-                        
 
-
+                        default:
+                            ind = 'error';
+                            break;
 
                     }
-
-
-
-
-
-
-
-
-
                     break;
+                                
                 case 'INST0':
                     switch(element.value){
                         case 'RET':
-                            return '0035';
+                            return '35';
                         case 'PUSHA':
-                            return '0021';
+                            return '21';
                         case 'POPA':
-                            return '0023';
+                            return '23';
                             
                     }
                 case 'INST1':
@@ -574,10 +724,9 @@ export class Assembler{
                             return FuncInterface.binaryToHexoneByte(instcode) ;
                         }
 
-
                     }else{
                     var oppcode = "";
-                    var adr= FuncInterface.decimalToHex2Bytes(input[1].value);
+                    var adr= FuncInterface.decimalToHex(input[1].value,4);
                     switch(element.value){
                         case 'CALL':
                             oppcode = '33';
@@ -609,92 +758,46 @@ export class Assembler{
                     }
                     let instcode=oppcode+adr;
                     return instcode;
-                    /*
-                    switch(element.adrmode){
-                        case 0:
-                            reg_mod = '000';
-                            break;
-                        case 1:
-                            reg_mod = '001';
-                            break;
-                        case 2:
-                            reg_mod = '010';
-                            break;
-                        case 3:
-                            if (input[4].value<=255) {
-                                reg_mod = '110';
-                            }else{
-                                reg_mod = '111';
-
-                            }
-
-                        //or
-                        break;
-
-                        case 4:
-                        //ir
-                        reg_mod = '100';
-                        break;
-                
-                        case 5:
-                            //br
-                            reg_mod = '011';
-                            break;
-                        case 6:
-                            //ir + br
-                            reg_mod = '101';
-                            break;
-                            //addressing modes
-                    }
-                    
-                    //size
-                    if ( input[1].value < 255 ){
-                        //size 
-                        size = '0';
-                        // add operand
-                    }else{
-                        
-                        if (input[1].value < 65535){
-                            //size 
-                            size = '1';
-                        
-                            
-                        }else{
-                            if (input[1].type==='REGISTER' ){
-                                //size 
-                                ind = '0'
-                                if ([ 'R1', 'R2', 'R3', 'R4', 'ACC', 'BR', 'IR', 'SR'].includes(input[1].value))
-                                {
-                                    size = '1';
-                                }else{
-                                    if (['R1R', 'R2R', 'R3R', 'ACCR', 'R1L', 'R2L', 'R3L', 'ACCL'].includes(input[1].value)){
-                                        size = '0';
-                                    }else{
-                                        size = 'error';
-                                    }
-                                }
-                                     
-                            }else{
-                                size = 'error';
-                            }    
-                                
-                        }
-                    }
-                        */
+                   
                 }
 
             }
-        
+            
 
-      }   
+        }   
+        static assemblecode(input){
+            let output = new Assembler(input) ;
+            var assembledcode = [];
+            var toassmb = (output && output.toAssemble && output.toAssemble.Syntaxiclist) ? output.toAssemble.Syntaxiclist : "Syntaxiclist is undefined";
+            
+            if ( Errorcalm.SyntaxicError ===[]) {
+
+                for (let index = 0; index < toassmb.length; index++) {
+         
+                    assembledcode.push(Assembler.assemble(toassmb[index])) 
+                
+                }
+            
+                console.log("\nAssembled code: \n",assembledcode)
+                // here put the return in case of success
+                
+            }else{
+                //here put the return in case of error
+            }
+        }
+
+
   }
 
 
 
 
 
-var input = ["LABEL le 1437","LABEL labe 4532", "NOT R1", "CALL labe","SUB labe*,R1*+10","MOV R1*,R1",'ADD R1*+100,R1',"PUSHA"]
+var input = ["LABEL le 1437","LABEL labe 4532",'ADD R1H,BR', "MOV BR*+IR+5,10", "ADD BR*+10,IR*+10","DIV 20*,2* ","BE 35",'POPA',"ROL R3",'NEG R1R']
 
+Assembler.assemblecode(input)
+
+/*
 let output = new Assembler(input) ;
 
 
@@ -706,14 +809,43 @@ console.log("\nLabel list: \n",Assembler.Labellist)
 
 //console.log("\nSyntaxic list: \n", output?.toAssemble?.Syntaxiclist ?? "Syntaxiclist is undefined");
 console.log("\nSyntaxic list: \n", (output && output.toAssemble && output.toAssemble.Syntaxiclist) ? output.toAssemble.Syntaxiclist : "Syntaxiclist is undefined");
+var toassmb = (output && output.toAssemble && output.toAssemble.Syntaxiclist) ? output.toAssemble.Syntaxiclist : "Syntaxiclist is undefined";
+var assembledcode = []
 
+for (let index = 0; index < toassmb.length; index++) {
+         
+    assembledcode.push(Assembler.assemble(toassmb[index])) 
+    console.log("\nAssembled code: \n",assembledcode)
 
-//console.log has to be deleted 
+}
 
-
-console.log("code:",
-Assembler.assemble( [
-    { type: 'INST1', value: 'BI', adrmode: 0 },
-    { type: 'NUMBER', value: '22' }
+console.log("\nAssembled code: \n",assembledcode)
+//console.log has to be deleted    03cd11b4000a 
+*/
+/*
+console.log("\ncode:",
+Assembler.assemble(  [
+    { type: 'INST2', value: 'ADD', size: '1' },
+    { type: 'NUMBER', value: '100', adrmode: 4, size: '1' },
+    { type: 'REGISTER', value: 'R1', adrmode: 0, size: '1' }
   ])
 )
+
+console.log("\ncode:",
+Assembler.assemble(  [
+    { type: 'INST2', value: 'ADD', size: '1' },
+    { type: 'NUMBER', value: '2', adrmode: 4, size: '1' },
+    { type: 'REGISTER', value: 'R1', adrmode: 0, size: '1' }
+  ])
+)
+
+
+console.log("\ncode:",
+Assembler.assemble(  [
+    { type: 'INST2', value: 'ADD', size: '1' }, //8 ----**2
+    { type: 'NUMBER', value: '65535', adrmode: 0, size: '1' },//8 (11 000 101)------**2 + OP1=11B4
+    { type: 'NUMBER', value: '4555', adrmode: 6, size: '1' }// DEP2
+  ]))*/
+
+//10001101101000
+//000000000001010ffff
